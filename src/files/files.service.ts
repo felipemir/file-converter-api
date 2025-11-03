@@ -73,8 +73,9 @@ export class FilesService {
 
   // DOCX -> HTML (Mammoth) -> PDF (Puppeteer).
   private async convertDocx(file: Express.Multer.File): Promise<Buffer> {
-    const arrayBuffer = this.bufferToArrayBuffer(file.buffer);
-    const { value: html } = await mammoth.convertToHtml({ arrayBuffer });
+    const { value: html } = await mammoth.convertToHtml({
+      buffer: file.buffer,
+    });
     const wrappedHtml = this.wrapHtml(html, file.originalname);
     return this.pdfRenderer.renderHtml(wrappedHtml);
   }
@@ -129,12 +130,5 @@ export class FilesService {
         ${content}
       </body>
     </html>`;
-  }
-
-  private bufferToArrayBuffer(buffer: Buffer): ArrayBuffer {
-    return buffer.buffer.slice(
-      buffer.byteOffset,
-      buffer.byteOffset + buffer.byteLength,
-    ) as ArrayBuffer;
   }
 }
